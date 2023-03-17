@@ -1,0 +1,76 @@
+plugins {
+	id "java"
+}
+
+group = "io.github.lawrencez.boilerplate"
+version = "1.0-SNAPSHOT"
+description = "playwright-demo"
+
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+javadoc.options.encoding = "UTF-8"
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	guiceVersion = "5.1.0"
+	ownerVersion = "1.0.12"
+	testngVersion = "7.7.0"
+	extentreportsVersion = "5.0.9"
+	univocityVersion = "2.9.1"
+	playwrightVersion = "1.31.0"
+	log4jVersion = "2.20.0"
+	lombokVersion = "1.18.26"
+}
+
+dependencies {
+	implementation "com.google.inject:guice:${guiceVersion}"
+	implementation "org.aeonbits.owner:owner:${ownerVersion}"
+	implementation "org.testng:testng:${testngVersion}"
+	implementation "com.aventstack:extentreports:${extentreportsVersion}"
+	implementation "com.univocity:univocity-parsers:${univocityVersion}"
+	implementation "com.microsoft.playwright:playwright:${playwrightVersion}"
+	implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+	implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+	implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+	testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+	testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+// custom test task for running only the "smoke" tests
+// with 3 threads
+tasks.register('smokeTest', Test) {
+	useTestNG()
+	options {
+		systemProperties(System.getProperties())
+		useDefaultListeners = true
+		setParallel("methods")
+		setThreadCount(3)
+		includeGroups "smoke"
+	}
+}
+
+test {
+	def thread = System.getProperty("thread.count", "1").toInteger()
+	def group = System.getProperty("test.group")
+	def suite = System.getProperty("test.suite")
+	useTestNG()
+	options {
+		systemProperties(System.getProperties())
+		setParallel("methods")
+		setThreadCount(thread)
+		if (group) {
+			includeGroups group
+		}
+		if (suite) {
+			suites "src/test/resources/suites/$suite"
+		}
+	}
+}
