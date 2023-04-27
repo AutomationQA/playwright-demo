@@ -22,7 +22,7 @@ ext {
 	testngVersion = "7.7.0"
 	extentreportsVersion = "5.0.9"
 	univocityVersion = "2.9.1"
-	playwrightVersion = "1.31.0"
+	playwrightVersion = "1.32.0"
 	log4jVersion = "2.20.0"
 	lombokVersion = "1.18.26"
 }
